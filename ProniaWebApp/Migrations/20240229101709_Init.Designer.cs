@@ -11,7 +11,7 @@ using ProniaWebApp.Contexts;
 namespace ProniaWebApp.Migrations
 {
     [DbContext(typeof(ProniaDbContext))]
-    [Migration("20240226204234_Init")]
+    [Migration("20240229101709_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,8 @@ namespace ProniaWebApp.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
@@ -41,7 +42,8 @@ namespace ProniaWebApp.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 

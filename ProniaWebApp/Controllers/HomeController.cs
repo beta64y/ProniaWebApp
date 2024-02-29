@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProniaWebApp.Contexts;
+using ProniaWebApp.ViewModel;
 using System;
 
 namespace ProniaWebApp.Controllers
@@ -15,7 +16,14 @@ namespace ProniaWebApp.Controllers
 
         {
             List<Models.Slider> slides = _context.Sliders.ToList();
-            return View(slides);
+            List<Models.Shipping> shippings = _context.Shippers.ToList();
+
+            HomeViewModel homeViewModel = new HomeViewModel()
+            {
+                Sliders = slides,
+                Shippings = shippings
+            };
+            return View(homeViewModel);
         }
     }
 }
