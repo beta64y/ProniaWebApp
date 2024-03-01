@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProniaWebApp.Contexts;
 using ProniaWebApp.ViewModel;
 using System;
@@ -12,11 +13,11 @@ namespace ProniaWebApp.Controllers
         {
             _context = context;
         }
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
 
         {
-            List<Models.Slider> slides = _context.Sliders.ToList();
-            List<Models.Shipping> shippings = _context.Shippers.ToList();
+            List<Models.Slider> slides = await _context.Sliders.ToListAsync();
+            List<Models.Shipping> shippings = await  _context.Shippers.ToListAsync();
 
             HomeViewModel homeViewModel = new HomeViewModel()
             {
