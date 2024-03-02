@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProniaWebApp.Contexts;
+using ProniaWebApp.Models;
 
 namespace ProniaWebApp.Areas.Admin.Controllers
 {
@@ -21,6 +22,15 @@ namespace ProniaWebApp.Areas.Admin.Controllers
         public IActionResult Create()
         {
             return View();
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(Slider slider)
+        {
+            await _context.Sliders.AddAsync(slider);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
 
         }
     }
