@@ -16,8 +16,8 @@ namespace ProniaWebApp.Controllers
         public async Task<IActionResult> Index()
 
         {
-            List<Models.Slider> slides = await _context.Sliders.ToListAsync();
-            List<Models.Shipping> shippings = await  _context.Shippers.ToListAsync();
+            List<Models.Slider> slides = await _context.Sliders.AsNoTracking().ToListAsync();
+            List<Models.Shipping> shippings = await  _context.Shippers.AsNoTracking().ToListAsync();
 
             HomeViewModel homeViewModel = new HomeViewModel()
             {

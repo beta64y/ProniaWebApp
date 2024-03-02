@@ -31,9 +31,9 @@
                                     <td>@slides.Title</td>
                                     <td>@slides.Offer %</td>
                                     <td>
-                                        <a class="btn btn-success" asp-action="Detail">Detail</a>
-                                        <a class="btn btn-warning" asp-action="Update">Update</a>
-                                        <a class="btn btn-danger" asp-action="Delete">Delete</a>
+                                            <a class="btn btn-success" asp-action="Detail" asp-route-id="@slides.Id">Detail</a>
+                                            <a class="btn btn-warning" asp-action="Update" asp-route-id="@slides.Id">Update</a>
+                                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@slides.Id">Delete</a>
 
                                     </td>
                                 </tr>
