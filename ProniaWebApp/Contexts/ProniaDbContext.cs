@@ -12,5 +12,7 @@ namespace ProniaWebApp.Contexts
         }
         public DbSet<Slider> Sliders { get; set; } = null!;
         public DbSet<Shipping > Shippers { get; set; } = null!;
+        public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Product> Products { get; set; } = null!;
     }
 }

@@ -25,6 +25,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
 
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Slider slider)
         {
             await _context.Sliders.AddAsync(slider);
@@ -52,6 +53,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
         }
         [HttpPost]
         [ActionName(nameof(Delete))]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteSlider(int id)
         {
             var slider = await _context.Sliders.FirstOrDefaultAsync(x => x.Id == id);
@@ -74,7 +76,10 @@ namespace ProniaWebApp.Areas.Admin.Controllers
 
             return View(slider);
         }
+
         [HttpPost]
+        [ActionName(nameof(Update))]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(int id ,Slider slider)
         {
             var dbSlider = await _context.Sliders.FirstOrDefaultAsync(x => x.Id == id);
@@ -93,6 +98,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
 
         }
+
     }
 
 }
