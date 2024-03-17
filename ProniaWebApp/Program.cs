@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using ProniaWebApp.Contexts;
+using ProniaWebApp.Models;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ builder.Services.AddDbContext<ProniaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
 
+
+builder.Services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ProniaDbContext>();
 
 
 var app = builder.Build();

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProniaWebApp.Areas.Admin.ViewModels.ProductViewModel;
 using ProniaWebApp.Contexts;
+using ProniaWebApp.Helpers.Extensions;
 using ProniaWebApp.Models;
 
 namespace ProniaWebApp.Areas.Admin.Controllers
@@ -20,7 +22,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            List<Product> products = await _context.Products.AsNoTracking().Include(p => p.Category).ToListAsync();
+            List<Product> products = await _context.Products.AsNoTracking().Include(p => p.Category).Where(r => !r.IsDeleted).ToListAsync();
             return View(products);
         }
         public async Task<IActionResult> Create()
@@ -33,6 +35,24 @@ namespace ProniaWebApp.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductCreateViewModel product)
         {
+
+            ViewBag.Categories = await _context.Categories.AsNoTracking().ToListAsync();
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            if (!product.Image.CheckFileSize(3000))
+            {
+                ModelState.AddModelError("Image", "Sekl boyukdu balacasini yukle");
+                return View();
+            }
+            if (!product.Image.CheckFileType("image/"))
+            {
+                ModelState.AddModelError("Image", "sekil gonderde ne pdfni yapisdirmisan");
+                return View();
+            }
+
+
             string fileName = $"{Guid.NewGuid()}-{product.Image.FileName}";
             string path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "images", "website-images", fileName);
 
@@ -67,31 +87,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
 
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
 
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //[ActionName(nameof(Delete))]
-        //public async Task<IActionResult> DeleteProduct(int id)
-        //{
-        //    var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
-        //    if (product == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    _context.Products.Remove(product);
-        //    await _context.SaveChangesAsync();
-
-        //    return View(nameof(Index));
-        //}
         public async Task<IActionResult> Update(int id)
         {
 
@@ -108,7 +104,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
                 Price = product.Price,
                 DiscountPercent = product.DiscountPercent,
                 Rating = product.Rating,
-                Image = product.Image,
+                
                 CategoryId = product.CategoryId,
             };
 
@@ -119,26 +115,89 @@ namespace ProniaWebApp.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName(nameof(Update))]
-        public async Task<IActionResult> Update(ProductUpdateViewModel productUpdateViewModel,int id)
-        {
+        public async Task<IActionResult> Update(ProductUpdateViewModel productUpdateViewModel, int id)
+        { 
+            if (!productUpdateViewModel.Image.CheckFileSize(3000))
+            {
+                ModelState.AddModelError("Image", "get ariqla");
+                return View();
+            }
+
+            if (!productUpdateViewModel.Image.CheckFileType("image/"))
+            {
+                ModelState.AddModelError("Image", "get ariqla");
+                return View();
+            }
             var product = await _context.Products.FirstOrDefaultAsync(r => r.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
+
+            if (productUpdateViewModel.Image != null)
+            {
+                string basePath = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "images", "website-images");
+                string path = Path.Combine(basePath, product.Image);
+                if (System.IO.File.Exists(path))
+                {
+                    System.IO.File.Delete(path);
+                }
+                string fileName = $"{Guid.NewGuid()}-{productUpdateViewModel.Image.FileName}";
+                path = Path.Combine(basePath, fileName);
+                using (FileStream stream = new(path, FileMode.Create))
+                {
+                    await productUpdateViewModel.Image.CopyToAsync(stream);
+                }
+                product.Image = fileName;
+            }
+
+         
+    
+
+
             product.Name = productUpdateViewModel.Name;
             product.Description = productUpdateViewModel.Description;
             product.Price = productUpdateViewModel.Price; 
             product.DiscountPercent = productUpdateViewModel.DiscountPercent;
             product.Rating = productUpdateViewModel.Rating; 
-            product.Image = productUpdateViewModel.Image;
+            //product.Image = productUpdateViewModel.Image.FileName;
             product.CategoryId = productUpdateViewModel.CategoryId;
             product.UpdateDate = DateTime.UtcNow;
 
             await _context.SaveChangesAsync(); 
             return RedirectToAction(nameof(Index));
         }
+        public async Task<IActionResult> Delete(int id)
+        {
+            
+            var product = await _context.Products.FirstOrDefaultAsync(r => r.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            string path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "images", "website-images", product.Image.ToString());
+            if(System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);   
+            }
+            return View(product);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName(nameof(Delete))]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(r => r.Id == id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            product.IsDeleted = true;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
 
 
     }
