@@ -8,6 +8,12 @@ namespace ProniaWebApp.Controllers
     public class UserController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
+
+        public UserController(UserManager<AppUser> userManager)
+        {
+            _userManager = userManager;
+        }
+
         public IActionResult Register()
         {
             return View();
@@ -25,6 +31,7 @@ namespace ProniaWebApp.Controllers
                 Fullname = registerViewModel.Fullname,
                 UserName = registerViewModel.Username,
                 Email = registerViewModel.Email,
+                IsActive = true,
                 
 
             };
