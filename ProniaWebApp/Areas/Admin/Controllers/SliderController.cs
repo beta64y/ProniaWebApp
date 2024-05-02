@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProniaWebApp.Contexts;
 using ProniaWebApp.Models;
@@ -6,6 +7,7 @@ using ProniaWebApp.Models;
 namespace ProniaWebApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin,Moderator")]
     public class SliderController : Controller
     {
         private readonly ProniaDbContext _context;

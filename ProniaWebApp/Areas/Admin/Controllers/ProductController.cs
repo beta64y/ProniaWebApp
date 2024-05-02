@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using ProniaWebApp.Areas.Admin.ViewModels.ProductViewModel;
@@ -9,6 +10,7 @@ using ProniaWebApp.Models;
 namespace ProniaWebApp.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin,Moderator")]
     public class ProductController : Controller
     {
         private readonly ProniaDbContext _context;
@@ -19,7 +21,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
             _context = context;
             _webHostEnvironment = webHostEnvironment;
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             List<Product> products = await _context.Products.AsNoTracking().Include(p => p.Category).Where(r => !r.IsDeleted).ToListAsync();
@@ -91,7 +93,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
         public async Task<IActionResult> Update(int id)
         {
 
-            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id);
+            var product = await _context.Products.AsNoTracking().FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted) ;
             if (product == null)
             {
                 return NotFound();
