@@ -105,9 +105,9 @@ namespace ProniaWebApp.Controllers
             }
             //https://localhost:7176/Auth/Reset?email=&token=
             string token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            //string link = Url.Action("ResetPassword", "Auth", new { email = user.Email, token = token });
-            string link = Url.Action("ResetPassword", "Auth", new { email = user.Email, token = token },
-                HttpContext.Request.Scheme, HttpContext.Request.Host.Value);
+            string link = Url.Action("ResetPassword", "Auth", new { email = user.Email, token = token });
+            //string link = Url.Action("ResetPassword", "Auth", new { email = user.Email, token = token },
+                //HttpContext.Request.Scheme, HttpContext.Request.Host.Value);
 
             string path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "templates", "index.html");
             using StreamReader streamReader = new(path);

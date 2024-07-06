@@ -24,7 +24,12 @@ namespace ProniaWebApp.Areas.Admin.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            List<Product> products = await _context.Products.AsNoTracking().Include(p => p.Category).Where(r => !r.IsDeleted).ToListAsync();
+            List<Product> products = await _context.Products
+                .AsNoTracking()
+                .OrderBy(b => b.CreatedDate)
+                .Include(p => p.Category)
+                .Where(r => !r.IsDeleted)
+                .ToListAsync();
             return View(products);
         }
         public async Task<IActionResult> Create()
@@ -169,26 +174,27 @@ namespace ProniaWebApp.Areas.Admin.Controllers
             await _context.SaveChangesAsync(); 
             return RedirectToAction(nameof(Index));
         }
-        public async Task<IActionResult> Delete(int id)
-        {
-            
-            var product = await _context.Products.FirstOrDefaultAsync(r => r.Id == id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            string path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "images", "website-images", product.Image.ToString());
-            if(System.IO.File.Exists(path))
-            {
-                System.IO.File.Delete(path);   
-            }
-            return View(product);
-        }
+        //public async Task<IActionResult> Delete(int id)
+        //{
 
+        //    var product = await _context.Products.FirstOrDefaultAsync(r => r.Id == id);
+        //    if (product == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    string path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "images", "website-images", product.Image.ToString());
+        //    if(System.IO.File.Exists(path))
+        //    {
+        //        System.IO.File.Delete(path);   
+        //    }
+        //    return View(product);
+        //}
+
+
+        //[ValidateAntiForgeryToken]
+        //[ActionName(nameof(Delete))]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        [ActionName(nameof(Delete))]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> Delete(int id)/*DeleteProduct*/
         {
             var product = await _context.Products.FirstOrDefaultAsync(r => r.Id == id);
             if (product == null)
@@ -198,7 +204,7 @@ namespace ProniaWebApp.Areas.Admin.Controllers
             product.IsDeleted = true;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction(nameof(Index));
+            return Json(new {message = "Your product has been deleted." });
         }
 
 

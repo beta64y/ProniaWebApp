@@ -16,5 +16,9 @@ namespace ProniaWebApp.Contexts
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Product> Products { get; set; } = null!;
         public DbSet<Setting> Settings { get; set; } = null!;
+        public DbSet<BasketItem> BasketItems { get; set; } = null!;
+
+
+
     }
 }
